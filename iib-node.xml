@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:IntegrationNodeConnectionParameters
+	Version="0001" host="localhost" listenerPort="4414" integrationNodeName="TESTNODE_abuser"
+	xmlns:p="http://www.ibm.com/xmlns/prod/websphere/iib/8/IntegrationNodeConnectionParameters"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.ibm.com/xmlns/prod/websphere/iib/8/IntegrationNodeConnectionParameters broker.xsd " />

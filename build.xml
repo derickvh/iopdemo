@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="IIB Application Build" default="test" basedir=".">
+
+	<description>IIB Build Automation.
+
+		It assumes that mqsiprofile has been run and that mqsi environment
+		is ready to use.
+
+		The build is initiated from the root directory of the Eclipse workspace or of a local Git repository.
+
+				On the command line (Linux), the following command is issued:
+
+					ant
+	</description>
+
+	<import file="masterbuild.xml" />
+
+	<!-- Start of Global Properties -->
+
+	<property environment="env" />
+	<!--dirname property="build.dir" file="${ant.file}" / -->
+	<property file="${basedir}${file.separator}build.properties" />
+	<property name="iib.bar" value="${iib.app}" />
+	<property name="iib.barfile.param" value="${barfile.dir}${file.separator}${iib.bar}_${iib.bar.version}.bar" />
+	<property name="bar.logfile" value="${iib.bar}_${iib.bar.version}.log" />
+	<property name="iib.workspace" location="${basedir}" />
+	<property name="override.file" location="${basedir}${file.separator}${iib.override.file}" />
+
+	<!-- Parameters for the various mqsi commands -->
+
+	<property name="mqsi.createbar.parameters" value="-data ${iib.workspace} -b ${iib.barfile.param} ${iib.mqsicreatebar.params}" />
+	<property name="mqsi.applybaroverride.parameters" value="-b ${iib.barfile.param} -p ${override.file} -r" />
+	<property name="mqsi.deploy.parameters" value="-n ${iib.brokerfile} -e ${iib.svr} -a ${iib.barfile.param} -m" />
+	<property name="mqsi.readbar.parameters" value="-b ${iib.barfile.param} -r" />
+	<property name="mqsi.packagebar.parameters" value="-a ${iib.barfile.param} -w ${iib.workspace} ${iib.mqsipackagebar.params}" />
+
+	<!-- End of Global Properties -->
+
+	<echo message="Build start time: ${time.stamp}" />
+
+	<target name="compile" depends="cleanup,init.os" description="Creates a new BAR file using the mqsicreatebar command." unless="${deploy.only}">
+		<echo message="COMPILE target starting ...${line.separator}" />
+		<echo message="Command line: ${mqsi.createbar} ${mqsi.createbar.parameters}${line.separator}" />
+		<exec executable="${mqsi.createbar}" failonerror="true">
+			<!--logError="true" output="${bar.logfile}" append="true" -->
+			<arg line="${mqsi.createbar.parameters}" />
+		</exec>
+	</target>
+
+	<target name="test" depends="deploy">
+		<echo message="TEST target starting ..." />
+		<java classname="demo.iib.ci.TestClient">
+			<arg value="${basedir}${file.separator}build.properties" />
+			<classpath>
+				<pathelement location="${basedir}${file.separator}TestClient${file.separator}bin" />
+			</classpath>
+		</java>
+	</target>
+</project>

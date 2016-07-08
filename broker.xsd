@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ibm.com/xmlns/prod/websphere/iib/8/IntegrationNodeConnectionParameters">
+    <xsd:element name="IntegrationNodeConnectionParameters">
+    	<xsd:complexType>
+    		<xsd:attribute name="Version" use="required">
+    			<xsd:simpleType>
+    				<xsd:restriction base="xsd:string">
+    					<xsd:pattern value="\d\d[0-9\.]*"></xsd:pattern>
+    				</xsd:restriction>
+    			</xsd:simpleType>
+    		</xsd:attribute>
+    		<xsd:attribute name="host" type="xsd:string"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="listenerPort" type="xsd:int"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="integrationNodeName" type="xsd:string"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="userName" type="xsd:string"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="useSsl" type="xsd:boolean"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="sslTrustStorePassword" type="xsd:string"
+    			use="optional">
+    		</xsd:attribute>
+    		<xsd:attribute name="sslTrustStorePath" type="xsd:string"
+    			use="optional">
+    		</xsd:attribute>
+    	</xsd:complexType>
+    </xsd:element>
+</xsd:schema>
