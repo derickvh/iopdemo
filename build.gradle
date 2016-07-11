@@ -1,1 +1,17 @@
+switch (iib_env) {
+
+         case "PROD":
+          ant.properties['iib.brokerfile'] = 'iib-node-prod.xml'
+          ant.properties['iib.override.file'] = 'override-prod.properties'
+          break;
+         case "QA":
+          ant.properties['iib.brokerfile'] = 'iib-node-qa.xml'
+          ant.properties['iib.override.file'] = 'override-qa.properties'
+          break;
+         default:
+         ant.properties['iib.brokerfile'] = 'iib-node.xml'
+         ant.properties['iib.override.file'] = 'override.properties'
+
+}
+
 ant.importBuild 'build.xml'
