@@ -1,3 +1,7 @@
+/*
+ * Command line: gradle -Piib_env=QA|PROD|DEV Ant Target (e.g. deploy, compile, test)
+ */
+ 
 switch (iib_env) {
 
          case "PROD":
