@@ -11,6 +11,10 @@
 	<property name="iib.brokerfile" location="${import.basedir}${file.separator}${iib.node.specfile}" />
 	<property name="iib.path" location="${env.MQSI_BASE_FILEPATH}" />
 
+	<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
+	<property name="mqsi.packagebar" value="com.ibm.broker.config.appdev.FlowRendererBAR" />
+	<property name="mqsi.readbar" value="com.ibm.broker.config.util.ReadBar" />
+
 	<condition property="iib.os.win" value="true" else="false">
 		<os family="windows" />
 	</condition>
@@ -27,18 +31,13 @@
 		<echo message="INIT.OS.LNX target is starting ...${line.separator}" />
 		<property name="mqsi.deploy" value="mqsideploy" />
 		<property name="mqsi.createbar" value="mqsicreatebar" />
-		<property name="mqsi.applybaroverride" value="mqsiapplybaroverride" />
-		<property name="mqsi.packagebar" value="mqsipackagebar" />
-		<property name="mqsi.readbar" value="mqsireadbar" />
 	</target>
 
 	<target name="init.os" depends="init.os.lnx" description="Set mqsi command names for execution on Windows" if="${iib.os.win}">
 		<echo message="INIT.OS target is starting ...${line.separator}" />
 		<property name="mqsi.deploy" value="mqsideploy.exe" />
 		<property name="mqsi.createbar" value="mqsicreatebar.exe" />
-		<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
-		<property name="mqsi.packagebar" value="com.ibm.broker.config.appdev.FlowRendererBAR" />
-		<property name="mqsi.readbar" value="com.ibm.broker.config.util.ReadBar" />
+
 	</target>
 
 	<target name="cleanup" description="Deletes compiled bar files for this specific application or project." unless="${deploy.only}">
@@ -51,7 +50,8 @@
 	<target name="compile" depends="cleanup,init.os" description="Empty COMPILE target. Must be overriden in importing file." unless="${deploy.only}">
 	</target>
 
-	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command. The new property values are read from an overrides file.">
+	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command.
+		The new property values are read from an overrides file." unless="${deploy.only}">
 		<echo message="OVERRIDE target starting ...${line.separator}" />
 		<echo message="Command line: java -cp ... ${mqsi.applybaroverride} ${mqsi.applybaroverride.parameters}${line.separator}" />
 		<java classname="com.ibm.broker.config.util.ApplyBarOverride" failonerror="true" fork="true">

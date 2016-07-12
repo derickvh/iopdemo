@@ -1,7 +1,10 @@
 /*
  * Command line: gradle -Piib_env=QA|PROD|DEV Ant Target (e.g. deploy, compile, test)
+ * or place in gradle.properties file.
+ * The deployOnly property can be set to 'true' if an existing BAR file
+ * has to be deployed only; not first compiled.
  */
- 
+
 switch (iib_env) {
 
          case "PROD":
@@ -17,5 +20,7 @@ switch (iib_env) {
          ant.properties['iib.override.file'] = 'override.properties'
 
 }
+
+ant.properties['deploy.only'] = ext.deployOnly
 
 ant.importBuild 'build.xml'
