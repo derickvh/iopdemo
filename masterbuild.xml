@@ -3,10 +3,13 @@
 
 	<!-- Start of Global Properties -->
 
+	<property environment="env" />
+
 	<dirname file="${ant.file.masterbuild}" property="import.basedir" />
 	<property file="${import.basedir}${file.separator}masterbuild.properties" />
 	<property name="barfile.dir" location="${basedir}${file.separator}${iib.barfile.dir}" />
 	<property name="iib.brokerfile" location="${import.basedir}${file.separator}${iib.node.specfile}" />
+	<property name="iib.path" location="${env.MQSI_BASE_FILEPATH}" />
 
 	<condition property="iib.os.win" value="true" else="false">
 		<os family="windows" />
@@ -33,9 +36,9 @@
 		<echo message="INIT.OS target is starting ...${line.separator}" />
 		<property name="mqsi.deploy" value="mqsideploy.exe" />
 		<property name="mqsi.createbar" value="mqsicreatebar.exe" />
-		<property name="mqsi.applybaroverride" value="mqsiapplybaroverride.bat" />
-		<property name="mqsi.packagebar" value="mqsipackagebar.bat" />
-		<property name="mqsi.readbar" value="mqsireadbar.bat" />
+		<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
+		<property name="mqsi.packagebar" value="com.ibm.broker.config.appdev.FlowRendererBAR" />
+		<property name="mqsi.readbar" value="com.ibm.broker.config.util.ReadBar" />
 	</target>
 
 	<target name="cleanup" description="Deletes compiled bar files for this specific application or project." unless="${deploy.only}">
@@ -50,7 +53,7 @@
 
 	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command. The new property values are read from an overrides file.">
 		<echo message="OVERRIDE target starting ...${line.separator}" />
-		<echo message="Command line: ${mqsi.applybaroverride} ${mqsi.applybaroverride.parameters}${line.separator}" />
+		<echo message="Command line: java -cp ... ${mqsi.applybaroverride} ${mqsi.applybaroverride.parameters}${line.separator}" />
 		<java classname="com.ibm.broker.config.util.ApplyBarOverride" failonerror="true" fork="true">
   		<arg line="${mqsi.applybaroverride.parameters} -runtime" />
   		<classpath>
@@ -64,7 +67,7 @@
  		</java>
 	</target>
 
-	<target name="deploy" depends="compile,override" 
+	<target name="deploy" depends="compile,override"
 		description="Uses the mqsideploy command to deploy the compiled BAR file to the integration node specified in an XML file that is compliant with the broker.xsd schema.">
 		<echo message="DEPLOY target starting ...${line.separator}" />
 		<echo message="Command line: ${mqsi.deploy} ${mqsi.deploy.parameters}${line.separator}" />
@@ -78,7 +81,7 @@
 
 	<target name="read.bar" depends="compile" description="Reads a bar file and lists all its properties that can be overridden.">
 		<echo message="READ.BAR target starting ...${line.separator}" />
-		<echo message="Command line: ${mqsi.readbar} ${mqsi.readbar.parameters}${line.separator}" />
+		<echo message="Command line: java -cp ... ${mqsi.readbar} ${mqsi.readbar.parameters}${line.separator}" />
  		<java classname="com.ibm.broker.config.util.ReadBar" failonerror="true" fork="true">
   		<arg line="${mqsi.readbar.parameters} -runtime" />
   		<classpath>
@@ -94,7 +97,7 @@
 
 	<target name="package.bar" description="Packages a bar file by adding pre-compiled resources to it.">
 		<echo message="PACKAGE.BAR target starting ...${line.separator}" />
-		<echo message="Command line: ${mqsi.packagebar} ${mqsi.packagebar.parameters}${line.separator}" />
+		<echo message="Command line: java -cp ... ${mqsi.packagebar} ${mqsi.packagebar.parameters}${line.separator}" />
  		<java classname="com.ibm.broker.config.appdev.FlowRendererBAR" failonerror="true" fork="true">
   		<arg line="${mqsi.packagebar.parameters}" />
   		<classpath>

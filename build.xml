@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="IIB Application Build" default="test" basedir=".">
+<project name="IIB Application Build" basedir=".">
 
 	<description>IIB Build Automation.
 
@@ -17,7 +17,6 @@
 
 	<!-- Start of Global Properties -->
 
-	<property environment="env" />
 	<!--dirname property="build.dir" file="${ant.file}" / -->
 	<property file="${basedir}${file.separator}build.properties" />
 	<property name="iib.bar" value="${iib.app}" />
