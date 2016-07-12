@@ -5,12 +5,10 @@
 
 	<property environment="env" />
 
-	<dirname file="${ant.file.masterbuild}" property="import.basedir" />
-	<property file="${import.basedir}${file.separator}masterbuild.properties" />
-	<property name="barfile.dir" location="${basedir}${file.separator}${iib.barfile.dir}" />
-	<property name="iib.brokerfile" location="${import.basedir}${file.separator}${iib.node.specfile}" />
 	<property name="iib.path" location="${env.MQSI_BASE_FILEPATH}" />
 
+
+	<!-- Java class names of three MQSI commands -->
 	<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
 	<property name="mqsi.packagebar" value="com.ibm.broker.config.appdev.FlowRendererBAR" />
 	<property name="mqsi.readbar" value="com.ibm.broker.config.util.ReadBar" />
@@ -19,7 +17,7 @@
 		<os family="windows" />
 	</condition>
 
-	<!-- Create time stamp to incorporate in BAR file name -->
+	<!-- Create build start time stamp -->
 
 	<tstamp>
 		<format property="time.stamp" pattern="yyyy-MM-dd'T'HH:mm:ss" />
