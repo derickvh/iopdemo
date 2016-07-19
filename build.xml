@@ -19,13 +19,13 @@
 
 	<property file="${basedir}${file.separator}build.properties" />
 	<property name="iib.bar" value="${iib.app}" />
-	
+
 	<property name="barfile.dir" location="${basedir}${file.separator}${iib.barfile.dir}" />
-	<property name="iib.barfile.param" value="${barfile.dir}${file.separator}${iib.bar}_${iib.bar.version}.bar" />	
-	
-	<!-- Integration Node Connection Details File -->	
+	<property name="iib.barfile.param" value="${barfile.dir}${file.separator}${iib.bar}_${iib.bar.version}.bar" />
+
+	<!-- Integration Node Connection Details File -->
 	<property name="iib.brokerfile" location="${basedir}${file.separator}${iib.node.specfile}" />
-	
+
 	<property name="iib.bar.logfile" value="${iib.bar}_${iib.bar.version}.log" />
 	<property name="iib.workspace" location="${basedir}" />
 	<property name="override.file" location="${basedir}${file.separator}${iib.override.file}" />
@@ -42,10 +42,10 @@
 
 	<echo message="Build start time: ${time.stamp}" />
 
-	<target name="compile" depends="cleanup,init.os" description="Creates a new BAR file using the mqsicreatebar command." unless="${deploy.only}">
+	<target name="compile" depends="cleanup" description="Creates a new BAR file using the mqsicreatebar command." unless="${deploy.only}">
 		<echo message="COMPILE target starting ...${line.separator}" />
 		<echo message="Command line: ${mqsi.createbar} ${mqsi.createbar.parameters}${line.separator}" />
-		<exec executable="${mqsi.createbar}" failonerror="true">
+		<exec executable="${iib.path}${file.separator}tools${file.separator}${mqsi.createbar}" failonerror="true">
 			<!--logError="true" output="${iib.bar.logfile}" append="true" -->
 			<arg line="${mqsi.createbar.parameters}" />
 		</exec>

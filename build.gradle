@@ -5,35 +5,33 @@
  * has to be deployed only; not first compiled.
  */
 
-/* First set the mqsi environment so that the Ant build file can find
- * mqsi commands
+/* First set the mqsi environment paths and commands so that the Ant
+ * build file can find the mqsi commands
  */
 
-ext.mqsiprofileDir = ext.mqsiprofilePathWin
-ext.mqsiCmdLine = 'cmd /c'
+ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
-if (org.gradle.internal.os.OperatingSystem.current().windows) {
+       ant.properties['mqsi.deploy'] = 'mqsideploy.exe'
+       ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
+       ant.properties['iib.path'] = ext.mqsiprofilePathWin
 
-        ant.properties['iib.os.win'] = true
+       //exec {
+        //  workingDir = ext.mqsiprofilePathWin + '\\server\\bin'
+        //   commandLine "cmd.exe", "/c", "mqsiprofile.cmd"
+      //}
 
-} else {
+   } else {
 
-        ext.mqsiprofileDir = ext.mqsiprofilePathUnix
-        ext.mqsiCmdLine = 'source'
+       ant.properties['mqsi.deploy'] = 'mqsideploy'
+       ant.properties['mqsi.createbar'] = 'mqsicreatebar'
+       ant.properties['iib.path'] = ext.mqsiprofilePathUnix
 
-        ant.properties['iib.os.win'] = false
+     //exec {
+      //      workingDir = '.'
+      //      commandLine "/bin/sh", ".", ext.mqsiprofilePathUnix + "/server/bin/mqsiprofile"
+      //      standardOutput = hashStdOut
+       //}
 }
-
-println ext.mqsiprofileDir
-println ext.mqsiCmdLine
-
-/*
-task setMqsiprofile(type:Exec) {
-
-  workingDir ext.mqsiprofileDir
-  commandLine ext.mqsiCmdLine, 'mqsiprofile'
-}
-*/
 
 switch (iib_env) {
 

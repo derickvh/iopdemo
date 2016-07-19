@@ -3,19 +3,10 @@
 
 	<!-- Start of Global Properties -->
 
-	<property environment="env" />
-
-	<property name="iib.path" location="${env.MQSI_BASE_FILEPATH}" />
-
-
 	<!-- Java class names of three MQSI commands -->
 	<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
 	<property name="mqsi.packagebar" value="com.ibm.broker.config.appdev.FlowRendererBAR" />
 	<property name="mqsi.readbar" value="com.ibm.broker.config.util.ReadBar" />
-
-	<condition property="iib.os.win" value="true" else="false">
-		<os family="windows" />
-	</condition>
 
 	<!-- Create build start time stamp -->
 
@@ -25,19 +16,6 @@
 
 	<!-- End of Global Properties -->
 
-	<target name="init.os.lnx" description="Set mqsi command names for execution on Linux" unless="${iib.os.win}">
-		<echo message="INIT.OS.LNX target is starting ...${line.separator}" />
-		<property name="mqsi.deploy" value="mqsideploy" />
-		<property name="mqsi.createbar" value="mqsicreatebar" />
-	</target>
-
-	<target name="init.os" depends="init.os.lnx" description="Set mqsi command names for execution on Windows" if="${iib.os.win}">
-		<echo message="INIT.OS target is starting ...${line.separator}" />
-		<property name="mqsi.deploy" value="mqsideploy.exe" />
-		<property name="mqsi.createbar" value="mqsicreatebar.exe" />
-
-	</target>
-
 	<target name="cleanup" description="Deletes compiled bar files for this specific application or project." unless="${deploy.only}">
 		<echo message="CLEANUP target is starting ...${line.separator}" />
 		<delete failonerror="false" verbose="true">
@@ -45,7 +23,7 @@
 		</delete>
 	</target>
 
-	<target name="compile" depends="cleanup,init.os" description="Empty COMPILE target. Must be overriden in importing file." unless="${deploy.only}">
+	<target name="compile" depends="cleanup" description="Empty COMPILE target. Must be overriden in importing file." unless="${deploy.only}">
 	</target>
 
 	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command.
@@ -69,7 +47,7 @@
 		description="Uses the mqsideploy command to deploy the compiled BAR file to the integration node specified in an XML file that is compliant with the broker.xsd schema.">
 		<echo message="DEPLOY target starting ...${line.separator}" />
 		<echo message="Command line: ${mqsi.deploy} ${mqsi.deploy.parameters}${line.separator}" />
-		<exec executable="${mqsi.deploy}" failonerror="true">
+		<exec executable="${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy}" failonerror="true">
 			<arg line="${mqsi.deploy.parameters}" />
 		</exec>
 	</target>
