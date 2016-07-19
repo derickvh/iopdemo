@@ -1,9 +1,35 @@
 /*
- * Command line: gradle -Piib_env=QA|PROD|DEV Ant Target (e.g. deploy, compile, test)
+ * Command line: gradle -Piib_env=QA|PROD|DEV Ant Target (e.g. deploy, compile, * test)
  * or place in gradle.properties file.
  * The deployOnly property can be set to 'true' if an existing BAR file
  * has to be deployed only; not first compiled.
  */
+
+/* First set the mqsi environment so that the Ant build file can find
+ * mqsi commands
+ */
+
+if (org.gradle.internal.os.OperatingSystem.current().windows) {
+
+        ext.mqsiprofileDir = mqsiprofilePathWin
+        ext.mqsiCmdLine = ['cmd', '/c', 'mqsiprofile.cmd']
+
+        ant.properties['iib.os.win'] = true
+
+} else {
+        ext.mqsiprofileDir = mqsiprofilePathUnix
+        ext.mqsiCmdLine = ['source', './mqsiprofile']
+
+        ant.properties['iib.os.win'] = false
+}
+
+task setMqsiprofile(type:Exec) {
+
+  workingDir ext.mqsiprofileDir
+  commandLine ext.mqsiCmdLine
+
+  }
+}
 
 switch (iib_env) {
 
