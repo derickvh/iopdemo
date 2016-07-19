@@ -9,27 +9,31 @@
  * mqsi commands
  */
 
-if (org.gradle.internal.os.OperatingSystem.current().windows) {
+ext.mqsiprofileDir = ext.mqsiprofilePathWin
+ext.mqsiCmdLine = 'cmd /c'
 
-        ext.mqsiprofileDir = mqsiprofilePathWin
-        ext.mqsiCmdLine = ['cmd', '/c', 'mqsiprofile.cmd']
+if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
         ant.properties['iib.os.win'] = true
 
 } else {
-        ext.mqsiprofileDir = mqsiprofilePathUnix
-        ext.mqsiCmdLine = ['source', './mqsiprofile']
+
+        ext.mqsiprofileDir = ext.mqsiprofilePathUnix
+        ext.mqsiCmdLine = 'source'
 
         ant.properties['iib.os.win'] = false
 }
 
+println ext.mqsiprofileDir
+println ext.mqsiCmdLine
+
+/*
 task setMqsiprofile(type:Exec) {
 
   workingDir ext.mqsiprofileDir
-  commandLine ext.mqsiCmdLine
-
-  }
+  commandLine ext.mqsiCmdLine, 'mqsiprofile'
 }
+*/
 
 switch (iib_env) {
 
