@@ -15,22 +15,11 @@
        ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
        ant.properties['iib.path'] = ext.mqsiprofilePathWin
 
-       //exec {
-        //  workingDir = ext.mqsiprofilePathWin + '\\server\\bin'
-        //   commandLine "cmd.exe", "/c", "mqsiprofile.cmd"
-      //}
-
    } else {
 
        ant.properties['mqsi.deploy'] = 'mqsideploy'
        ant.properties['mqsi.createbar'] = 'mqsicreatebar'
        ant.properties['iib.path'] = ext.mqsiprofilePathUnix
-
-     //exec {
-      //      workingDir = '.'
-      //      commandLine "/bin/sh", ".", ext.mqsiprofilePathUnix + "/server/bin/mqsiprofile"
-      //      standardOutput = hashStdOut
-       //}
 }
 
 switch (iib_env) {
@@ -46,9 +35,14 @@ switch (iib_env) {
          default:
          ant.properties['iib.node.specfile'] = 'iib-node.xml'
          ant.properties['iib.override.file'] = 'override.properties'
-
 }
 
 ant.properties['deploy.only'] = ext.deployOnly
 
 ant.importBuild 'build.xml'
+
+task multiDeploy << {
+
+      ant.mdeploy(hostname: 'localhost', port: '4414')
+      ant.mdeploy(hostname: 'iibsrvr1', port: '4415', execgroup: 'highperf')
+}
