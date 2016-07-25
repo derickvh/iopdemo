@@ -60,4 +60,10 @@
 			</classpath>
 		</java>
 	</target>
+
+	<target name="multi.deploy">
+		<mdeploy inode="TESTNODE_derick" execgroup="hiperf" />
+		<mdeploy inode="TESTNODE_derick" execgroup="default" />
+	</target>
+
 </project>
