@@ -88,29 +88,23 @@
 	</target>
 
 <macrodef name="mdeploy">
-	<attribute name="hostname" />
+
+	<attribute name="inode" />
+	<attribute name="hostname" default="localhost"/>
 	<attribute name="port" default="4414" />
 	<attribute name="barfile" default="${iib.barfile.param}" />
 	<attribute name="execgroup" default="${iib.svr}"/>
 
 	<sequential>
 			<echo message="MULTI.DEPLOY target starting ...${line.separator}" />
-			<echo message="Command line: ${mqsi.deploy} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup}${line.separator}" />
+			<echo message="Command line: ${mqsi.deploy} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup} -m${line.separator}" />
+			<!--
+			<exec executable="${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy}" failonerror="true">
+				<arg line="inode -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup}${line.separator}" />
+			</exec>
+		-->
 	</sequential>
 </macrodef>
-
-<macrodef name="sayHello">
-		<attribute name="name"/>
-		<sequential>
-				<echo message="hello @{name}" />
-		</sequential>
-</macrodef>
-
-<!--
-<exec executable="${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy}" failonerror="true">
-	<arg line="${mqsi.deploy.parameters}" />
-</exec>
--->
 
 	<!-- TODO. The deployed BAR file to be copied to an object store -->
 

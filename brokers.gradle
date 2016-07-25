@@ -1,21 +1,26 @@
 ext.brokerFile = file('broker.properties')
 
  task loadbroker {
+
+   String[] brokerElems
    Properties brokers = readBrokers()
 
-   for(String key : brokers.stringPropertyNames()) {
+   def INODE = 0
+   def HOST = 1
+   def PORT = 2
+   def EXGRP = 3
 
-       String[] brokerelems = brokers.getProperty(key).split(':')
+   brokers.each{key, value ->
 
-       //tmpHM.each{ key, value ->
-       //   doSomethingWithKeyAndValue()
-       //}
+     brokerElems = value.split(':')
 
-       //for (final String name: properties.stringPropertyNames())
-       //map.put(name, properties.getProperty(name));
+     //ant.mdeploy(inode: brokerElems(INODE), hostname: brokerElems(HOST), port: //brokerElems(PORT), execgroup: brokerElems(EXGRP))
 
-       for(String s : brokerelems) { println(s)}
-       println()
+     //println(key)
+
+     //for(String s : brokerelems) { println(s)}
+     //println()
+
    }
 }
 

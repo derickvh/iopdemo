@@ -37,12 +37,48 @@ switch (iib_env) {
          ant.properties['iib.override.file'] = 'override.properties'
 }
 
+ext.brokerFile = file('broker.properties')
+
 ant.properties['deploy.only'] = ext.deployOnly
 
 ant.importBuild 'build.xml'
 
-task multiDeploy << {
+task multiDeploy() {
 
-      ant.mdeploy(hostname: 'localhost', port: '4414')
-      ant.mdeploy(hostname: 'iibsrvr1', port: '4415', execgroup: 'highperf')
+  Properties brokers = readBrokers()
+
+  doLast {
+
+  String[] brokerElems
+
+  def iNode, hostName, Port, iServer
+
+  brokers.each{ key, value ->
+
+    brokerElems = value.split(':')
+
+    iNode = brokerElems[0]
+    hostName = brokerElems[1]
+    Port = brokerElems[2]
+    iServer = brokerElems[3]
+
+    ant.mdeploy(inode: iNode,
+                hostname: hostName,
+                port: Port,
+                execgroup: iServer)
+    }
+  }
+}
+
+Properties readBrokers() {
+
+ logger.quiet 'Reading the brokers file.'
+
+ if (!ext.brokerFile.exists()) {
+     throw new GradleException(
+     "Required broker file does not exist: $brokerFile.canonicalPath")
+ }
+ Properties brokerProps = new Properties()
+ brokerFile.withInputStream { stream -> brokerProps.load(stream) }
+  return brokerProps
 }
