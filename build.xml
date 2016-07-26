@@ -38,6 +38,11 @@
 	<property name="mqsi.readbar.parameters" value="-b ${iib.barfile.param} -r" />
 	<property name="mqsi.packagebar.parameters" value="-a ${iib.barfile.param} -w ${iib.workspace} ${iib.mqsipackagebar.params}" />
 
+	<!--Set property deploy.only if an existing BAR file is up to date -->
+	<uptodate property="deploy.only" targetfile="${iib.barfile.param}">
+		<srcfiles dir="${iib.workspace}" includes="**/*.msgflow" />
+	</uptodate>
+
 	<!-- End of Global Properties -->
 
 	<echo message="Build start time: ${time.stamp}" />
@@ -61,7 +66,7 @@
 		</java>
 	</target>
 
-	<target name="multi.deploy">
+	<target name="multi.deploy" depends="compile,override">
 		<mdeploy inode="TESTNODE_derick" execgroup="hiperf" />
 		<mdeploy inode="TESTNODE_derick" execgroup="default" />
 	</target>

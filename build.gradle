@@ -38,7 +38,7 @@ switch (iibEnv) {
 ext.brokerFile = file('broker.properties')
 
 //Set Ant properties from gradle properties read from properties file
-ant.properties['deploy.only'] = ext.deployOnly
+
 ant.properties['iib.barfile.dir']=ext.barfileDir
 ant.properties['iib.svr']=ext.intServer
 ant.properties['iib.bar.version']=ext.barFileVersion
