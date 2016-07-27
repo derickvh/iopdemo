@@ -68,7 +68,7 @@ task multiDeploy() {
 
 Properties readPropsFile(File fProps) {
 
- logger.quiet 'Reading the brokers file.'
+ logger.quiet 'Reading a properties file.'
 
  if (!fProps.exists()) {
      throw new GradleException(
