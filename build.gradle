@@ -69,18 +69,22 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
   ant.importBuild 'build.xml'
 
-  if (soapUIProject != 'None') {
-      soapuiParameters = soapUIParams + ' ' + soapUIProject
-    } 
+  task runSoapUI {
 
-    task runSoapUI {
+    doLast {
 
-      doLast {
+      if (soapUIProject != 'None') {
 
-        ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
-        soapuiXmlToHtml(projectDir)
+          soapuiParameters = soapUIParams + ' ' + soapUIProject
+
+          ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
+          soapuiXmlToHtml(projectDir)
+
+      } else {
+          ant.echo('Nothing to do.')
       }
     }
+  }
 
     task multiDeploy() {
 
