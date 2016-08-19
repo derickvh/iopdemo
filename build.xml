@@ -1,74 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="IIB Application Build" basedir=".">
-
-	<description>IIB Build Automation.
-
-		It assumes that mqsiprofile has been run and that mqsi environment
-		is ready to use.
-
-		The build is initiated from the root directory of the Eclipse workspace or of a local Git repository.
-
-				On the command line (Linux), the following command is issued:
-
-					ant
-	</description>
-
-	<import file="masterbuild.xml" />
+<project name="iib.build" basedir=".">
 
 	<!-- Start of Global Properties -->
 
-	<property file="${basedir}${file.separator}build.properties" />
-	<property name="iib.bar" value="${iib.app}" />
-
 	<property name="barfile.dir" location="${basedir}${file.separator}${iib.barfile.dir}" />
 	<property name="iib.barfile.param" value="${barfile.dir}${file.separator}${iib.bar}_${iib.bar.version}.bar" />
-
-	<!-- Integration Node Connection Details File -->
-	<property name="iib.brokerfile" location="${basedir}${file.separator}${iib.node.specfile}" />
-
-	<property name="iib.bar.logfile" value="${iib.bar}_${iib.bar.version}.log" />
-	<property name="iib.workspace" location="${basedir}" />
 	<property name="override.file" location="${basedir}${file.separator}${iib.override.file}" />
 
-	<!-- Parameters for the various mqsi commands -->
+	<!-- Java class names of three MQSI commands -->
 
-	<property name="mqsi.createbar.parameters" value="-data ${iib.workspace} -b ${iib.barfile.param} ${iib.mqsicreatebar.params}" />
+	<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
+
+
+	<!-- Parameters for the various MQSI commands -->
+
+	<property name="mqsi.createbar.parameters" value="-data ${basedir} -b ${iib.barfile.param} ${iib.mqsicreatebar.params}" />
 	<property name="mqsi.applybaroverride.parameters" value="-b ${iib.barfile.param} -p ${override.file} -r" />
-	<property name="mqsi.deploy.parameters" value="-n ${iib.brokerfile} -e ${iib.svr} -a ${iib.barfile.param} -m" />
-	<property name="mqsi.readbar.parameters" value="-b ${iib.barfile.param} -r" />
-	<property name="mqsi.packagebar.parameters" value="-a ${iib.barfile.param} -w ${iib.workspace} ${iib.mqsipackagebar.params}" />
 
 	<!--Set property deploy.only if an existing BAR file is up to date -->
+
 	<uptodate property="deploy.only" targetfile="${iib.barfile.param}">
-		<srcfiles dir="${iib.workspace}" includes="**/*.msgflow" />
+		<srcfiles dir="${basedir}" includes="**/*.msgflow" />
 	</uptodate>
+
+	<!-- Create build start time stamp -->
+
+	<tstamp>
+		<format property="time.stamp" pattern="yyyy-MM-dd'T'HH:mm:ss" />
+	</tstamp>
 
 	<!-- End of Global Properties -->
 
 	<echo message="Build start time: ${time.stamp}" />
 
+	<target name="cleanup" description="Deletes compiled bar files for this specific application or project." unless="${deploy.only}">
+		<echo message="CLEANUP target is starting ...${line.separator}" />
+		<delete failonerror="false" verbose="true">
+			<fileset dir="${barfile.dir}" includes="**/${iib.bar}*.bar" />
+		</delete>
+	</target>
+
 	<target name="compile" depends="cleanup" description="Creates a new BAR file using the mqsicreatebar command." unless="${deploy.only}">
 		<echo message="COMPILE target starting ...${line.separator}" />
 		<echo message="Command line: ${mqsi.createbar} ${mqsi.createbar.parameters}${line.separator}" />
 		<exec executable="${iib.path}${file.separator}tools${file.separator}${mqsi.createbar}" failonerror="true">
-			<!--logError="true" output="${iib.bar.logfile}" append="true" -->
 			<arg line="${mqsi.createbar.parameters}" />
 		</exec>
 	</target>
 
-	<target name="test" depends="deploy">
-		<echo message="TEST target starting ..." />
-		<java classname="demo.iib.ci.TestClient">
-			<arg value="${basedir}${file.separator}build.properties" />
-			<classpath>
-				<pathelement location="${basedir}${file.separator}TestClient${file.separator}bin" />
-			</classpath>
-		</java>
+	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command.
+		The new property values are read from an overrides file." unless="${deploy.only}">
+		<echo message="OVERRIDE target starting ...${line.separator}" />
+		<echo message="Command line: java -cp ... ${mqsi.applybaroverride}  ${mqsi.applybaroverride.parameters}${line.separator}" />
+
+		<java classname="com.ibm.broker.config.util.ApplyBarOverride" failonerror="true" fork="true">
+  		<arg line="${mqsi.applybaroverride.parameters} -runtime" />
+  		<classpath>
+   			<fileset dir="${iib.path}${file.separator}server${file.separator}classes">
+    				<include name="*.jar"/>
+   			</fileset>
+			<fileset dir="${iib.path}${file.separator}common${file.separator}classes">
+				<include name="*.jar"/>
+			</fileset>
+  		</classpath>
+ 		</java>
+
 	</target>
 
-	<target name="multi.deploy" depends="compile,override">
-		<mdeploy inode="TESTNODE_derick" execgroup="hiperf" />
-		<mdeploy inode="TESTNODE_derick" execgroup="default" />
-	</target>
+	<macrodef name="mruntest">
+
+		<attribute name="soapuiexec" />
+		<attribute name="params" />
+
+		<sequential>
+			<echo message="RUN.TEST target starting ...${line.separator}" />
+			<echo message="Command line: @{soapuiexec} @{params}${line.separator}" />
+			<exec executable="@{soapuiexec}" failonerror="true">
+				<arg line="@{params}" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="mdeploy">
+
+		<attribute name="inode" />
+		<attribute name="hostname" default="localhost"/>
+		<attribute name="port" default="4414" />
+		<attribute name="barfile" default="${iib.barfile.param}" />
+		<attribute name="execgroup" default="default"/>
+
+		<sequential>
+			<echo message="MULTI.DEPLOY target starting ...${line.separator}" />
+			<echo message="Command line: ${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy} @{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup} -m${line.separator}" />
+			<exec executable="${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy}" failonerror="true">
+				<arg line="@{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup} -m" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<!-- TODO. The deployed BAR file to be copied to an object store -->
 
 </project>

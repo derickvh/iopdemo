@@ -1,70 +1,139 @@
 //build.gradle
 
+  repositories {
+      maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+    configurations {
+      antClasspath
+    }
+
+    // dependency for XMLResultAggregator task
+
+    dependencies {
+      antClasspath 'org.apache.ant:ant-junit:1.8.2'
+    }
+
+// Select appropriate overrride properties file based on target deployment environment
+
 switch (iibEnv) {
 
          case "PROD":
-          ant.properties['iib.node.specfile'] = 'iib-node-prod.xml'
           ant.properties['iib.override.file'] = 'override-prod.properties'
           break;
          case "QA":
-          ant.properties['iib.node.specfile'] = 'iib-node-qa.xml'
           ant.properties['iib.override.file'] = 'override-qa.properties'
           break;
          default:
-         ant.properties['iib.node.specfile'] = 'iib-node.xml'
          ant.properties['iib.override.file'] = 'override.properties'
 }
 
-//Set Ant properties
+  // Define parameters for use by runSoapUI task
+
+  String soapuiExec, soapuiParameters
+
+  // Set Ant properties based on underlying platform
 
 if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
-      ant.properties['mqsi.deploy'] = 'mqsideploy.exe'
-      ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
-      ant.properties['iib.path'] = ext.mqsiprofilePathWin
+        ant.properties['mqsi.deploy'] = 'mqsideploy.exe'
+        ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
+        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride.bat'
+        ant.properties['iib.path'] = mqsiprofilePathWin
 
-  } else {
+        soapuiExec = soapUIPathWin + '\\testrunner.bat'
 
-      ant.properties['mqsi.deploy'] = 'mqsideploy'
-      ant.properties['mqsi.createbar'] = 'mqsicreatebar'
-      ant.properties['iib.path'] = ext.mqsiprofilePathUnix
+      } else if (org.gradle.internal.os.OperatingSystem.current().macOsX) {
+
+        ant.properties['mqsi.deploy'] = 'mqsideploy'
+        ant.properties['mqsi.createbar'] = 'mqsicreatebar'
+        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride'
+        ant.properties['iib.path'] = mqsiprofilePathMacOS
+
+        soapuiExec = soapUIPathMacOS + '/testrunner.sh'
+
+      } else {
+
+        ant.properties['mqsi.deploy'] = 'mqsideploy'
+        ant.properties['mqsi.createbar'] = 'mqsicreatebar'
+        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride'
+        ant.properties['iib.path'] = mqsiprofilePathMacUnix
+
+        soapuiExec = soapUIPathUnix + '/testrunner.sh'
 }
 
-ant.properties['iib.barfile.dir']=ext.barfileDir
-ant.properties['iib.svr']=ext.intServer
-ant.properties['iib.bar.version']=ext.barFileVersion
-ant.properties['iib.app']=ext.appName
-ant.properties['iib.mqsicreatebar.params']=ext.paramsMQSICreateBarfile
+  ant.properties['iib.barfile.dir'] = barfileDir
+  ant.properties['iib.bar.version'] = barFileVersion
+  ant.properties['iib.bar'] = appName
+  ant.properties['iib.mqsicreatebar.params'] = paramsMQSICreateBarfile
 
-ant.importBuild 'build.xml'
+  ant.importBuild 'build.xml'
 
-task multiDeploy() {
+  if (soapUIProject != 'None') {
+      soapuiParameters = soapUIParams + ' ' + soapUIProject
+    } 
 
-  File inFile = file('broker.properties')
-  Properties brokers = readPropsFile(inFile)
+    task runSoapUI {
 
-  doLast {
+      doLast {
 
-  String[] brokerElems
-  def iNode, hostName, Port, iServer
-
-  brokers.each{ key, value ->
-
-    brokerElems = value.split(':')
-
-  //Not very elegant, but here goes ...
-    iNode = brokerElems[0]
-    hostName = brokerElems[1]
-    Port = brokerElems[2]
-    iServer = brokerElems[3]
-
-    ant.mdeploy(inode: iNode,
-                hostname: hostName,
-                port: Port,
-                execgroup: iServer)
+        ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
+        soapuiXmlToHtml(projectDir)
+      }
     }
-  }
+
+    task multiDeploy() {
+
+      File inFile = file('broker.properties')
+      Properties brokers = readPropsFile(inFile)
+
+      doLast {
+
+        String[] brokerElems
+        def iNode, hostName, Port, iServer
+
+        brokers.each{ key, value ->
+
+          brokerElems = value.split(':')
+
+          // Not very elegant, but here goes ...
+          iNode = brokerElems[0]
+          hostName = brokerElems[1]
+          Port = brokerElems[2]
+          iServer = brokerElems[3]
+
+          ant.mdeploy(inode: iNode,
+                  hostname: hostName,
+                  port: Port,
+                  execgroup: iServer)
+                }
+              }
+            }
+
+//------ Functions used by tasks below this line ------
+
+// function to perform XSLT transformation of soapUI xml test report to html
+/*
+ * Thanks to ... http://stackoverflow.com/questions/35770615/need-through-guidance-on-gradle-script-to-execute-soapui-project-xmls-and-genera/35774134#35774134
+*/
+
+def soapuiXmlToHtml(resultsDir) {
+
+    def targetDir = new File(resultsDir, 'html')
+
+    ant.taskdef(
+        name: 'junitreport',
+        classname: 'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
+        classpath: configurations.antClasspath.asPath
+    )
+
+    ant.junitreport(todir: resultsDir) {
+        fileset(dir: resultsDir, includes: 'TEST-*.xml')
+        report(todir: targetDir, format: "noframes")
+    }
 }
+
+//------
 
 Properties readPropsFile(File fProps) {
 
@@ -72,11 +141,22 @@ Properties readPropsFile(File fProps) {
 
  if (!fProps.exists()) {
      throw new GradleException(
-     "Required broker file does not exist: $fProps.canonicalPath")
+     "Required properties file does not exist: $fProps.canonicalPath")
  }
   Properties props = new Properties()
   fProps.withInputStream { stream -> props.load(stream) }
   return props
 }
 
+tasks.multiDeploy {
+
+  description "Uses the mqsideploy command to deploy the compiled BAR file to one or more IIB integration nodes."
+}
+
+tasks.runSoapUI {
+
+  description "Runs a SoapUI Test Project and save the test results as a junit report in the html folder."
+}
+
 multiDeploy.dependsOn('compile', 'override')
+runSoapUI.dependsOn('multiDeploy')
