@@ -38,7 +38,6 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
         ant.properties['mqsi.deploy'] = 'mqsideploy.exe'
         ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
-        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride.bat'
         ant.properties['iib.path'] = mqsiprofilePathWin
 
         soapuiExec = soapUIPathWin + '\\testrunner.bat'
@@ -47,7 +46,6 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
         ant.properties['mqsi.deploy'] = 'mqsideploy'
         ant.properties['mqsi.createbar'] = 'mqsicreatebar'
-        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride'
         ant.properties['iib.path'] = mqsiprofilePathMacOS
 
         soapuiExec = soapUIPathMacOS + '/testrunner.sh'
@@ -56,7 +54,6 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
         ant.properties['mqsi.deploy'] = 'mqsideploy'
         ant.properties['mqsi.createbar'] = 'mqsicreatebar'
-        //ant.properties['mqsi.applybaroverride'] = 'mqsiapplybaroverride'
         ant.properties['iib.path'] = mqsiprofilePathMacUnix
 
         soapuiExec = soapUIPathUnix + '/testrunner.sh'
