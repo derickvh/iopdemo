@@ -37,6 +37,8 @@
 		<echo message="CLEANUP target is starting ...${line.separator}" />
 		<delete failonerror="false" verbose="true">
 			<fileset dir="${barfile.dir}" includes="**/${iib.bar}*.bar" />
+			<fileset dir="${basedir}" includes="**/*.log" />
+			<fileset dir="${basedir}" includes="**/TEST*.xml" />
 		</delete>
 	</target>
 

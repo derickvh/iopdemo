@@ -75,7 +75,7 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
           soapuiParameters = soapUIParams + ' ' + soapUIProject
 
           ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
-          soapuiXmlToHtml(projectDir)
+          //soapuiXmlToHtml(projectDir)
 
       } else {
           ant.echo('Nothing to do.')
