@@ -54,7 +54,7 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
         ant.properties['mqsi.deploy'] = 'mqsideploy'
         ant.properties['mqsi.createbar'] = 'mqsicreatebar'
-        ant.properties['iib.path'] = mqsiprofilePathMacUnix
+        ant.properties['iib.path'] = mqsiprofilePathUnix
 
         soapuiExec = soapUIPathUnix + '/testrunner.sh'
 }
