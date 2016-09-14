@@ -21,6 +21,9 @@
 
 	<uptodate property="deploy.only" targetfile="${iib.barfile.param}">
 		<srcfiles dir="${basedir}" includes="**/*.msgflow" />
+		<srcfiles dir="${basedir}" includes="**/*.subflow" />
+		<srcfiles dir="${basedir}" includes="**/*.java" />
+		<srcfiles dir="${basedir}" includes="**/*.esql" />
 	</uptodate>
 
 	<!-- Create build start time stamp -->
@@ -39,6 +42,7 @@
 			<fileset dir="${barfile.dir}" includes="**/${iib.bar}*.bar" />
 			<fileset dir="${basedir}" includes="**/*.log" />
 			<fileset dir="${basedir}" includes="**/TEST*.xml" />
+			<fileset dir="${basedir}" includes="**/*.class" />
 		</delete>
 	</target>
 
@@ -93,9 +97,9 @@
 
 		<sequential>
 			<echo message="MULTI.DEPLOY target starting ...${line.separator}" />
-			<echo message="Command line: ${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy} @{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup} -m${line.separator}" />
+			<echo message="Command line: ${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy} @{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup}${line.separator}" />
 			<exec executable="${iib.path}${file.separator}server${file.separator}bin${file.separator}${mqsi.deploy}" failonerror="true">
-				<arg line="@{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup} -m" />
+				<arg line="@{inode} -i @{hostname} -p @{port} -a @{barfile} -e @{execgroup}" />
 			</exec>
 		</sequential>
 	</macrodef>
