@@ -36,25 +36,31 @@ switch (iibEnv) {
 
 if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
-        ant.properties['mqsi.deploy'] = 'mqsideploy.exe'
+        ant.properties['mqsi.deployw'] = 'mqsideployw.bat'
+        ant.properties['mqsi.deployw.param'] = '/C'
         ant.properties['mqsi.createbar'] = 'mqsicreatebar.exe'
         ant.properties['iib.path'] = mqsiprofilePathWin
+        ant.properties['cmd.exec'] = 'cmd.exe'
 
         soapuiExec = soapUIPathWin + '\\testrunner.bat'
 
       } else if (org.gradle.internal.os.OperatingSystem.current().macOsX) {
 
-        ant.properties['mqsi.deploy'] = 'mqsideploy'
+        ant.properties['mqsi.deployw'] = 'mqsideployw'
+        ant.properties['mqsi.deployw.param'] = ''
         ant.properties['mqsi.createbar'] = 'mqsicreatebar'
         ant.properties['iib.path'] = mqsiprofilePathMacOS
+        ant.properties['cmd.exec'] = projectDir.getPath() + '/mqsideployw'
 
         soapuiExec = soapUIPathMacOS + '/testrunner.sh'
 
       } else {
 
-        ant.properties['mqsi.deploy'] = 'mqsideploy'
+        ant.properties['mqsi.deployw'] = 'mqsideployw'
+        ant.properties['mqsi.deployw.param'] = ''
         ant.properties['mqsi.createbar'] = 'mqsicreatebar'
         ant.properties['iib.path'] = mqsiprofilePathUnix
+        ant.properties['cmd.exec'] = projectDir.getPath() + '/mqsideployw'
 
         soapuiExec = soapUIPathUnix + '/testrunner.sh'
 }
@@ -72,13 +78,13 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
 
       if (soapUIProject != 'None') {
 
-          soapuiParameters = soapUIParams + ' ' + soapUIProject
+        soapuiParameters = soapUIParams + ' ' + soapUIProject
 
-          ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
-          //soapuiXmlToHtml(projectDir)
+        ant.mruntest(soapuiexec: soapuiExec, params: soapuiParameters)
+        //soapuiXmlToHtml(projectDir)
 
       } else {
-          ant.echo('Nothing to do.')
+        ant.echo('Nothing to do.')
       }
     }
   }
@@ -93,7 +99,7 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
         String[] brokerElems
         def iNode, hostName, Port, iServer
 
-        brokers.each{ key, value ->
+        brokers.each { key, value ->
 
           brokerElems = value.split(':')
 
@@ -138,7 +144,7 @@ def soapuiXmlToHtml(resultsDir) {
 
 Properties readPropsFile(File fProps) {
 
- logger.quiet 'Reading a properties file.'
+ ant.echo('Reading a properties file.')
 
  if (!fProps.exists()) {
      throw new GradleException(
@@ -151,12 +157,12 @@ Properties readPropsFile(File fProps) {
 
 tasks.multiDeploy {
 
-  description "Uses the mqsideploy command to deploy the compiled BAR file to one or more IIB integration nodes."
+  description "Invokes the mdeploy Ant macro to prepare the MQSI environment and deploy the compiled BAR file to one or more IIB integration nodes."
 }
 
 tasks.runSoapUI {
 
-  description "Runs a SoapUI Test Project and save the test results as a junit report in the html folder."
+  description "Runs a SoapUI Test Project and generates a junit-style test report."
 }
 
 multiDeploy.dependsOn('compile', 'override')
