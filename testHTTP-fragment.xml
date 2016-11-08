@@ -1,0 +1,8 @@
+<target name="testHTTP" depends="multiDeploy">
+<echo message="TEST target starting ..." />
+<java classname="demo.iib.ci.TestClient">
+  <classpath>
+    <pathelement location="${workspace.dir}${file.separator}TestClient${file.separator}bin" />
+  </classpath>
+</java>
+</target>

@@ -23,6 +23,11 @@
 		<srcfiles dir="${basedir}" includes="**/*.subflow" />
 		<srcfiles dir="${basedir}" includes="**/*.java" />
 		<srcfiles dir="${basedir}" includes="**/*.esql" />
+		<srcfiles dir="${basedir}" includes="**/*.xml" />
+		<srcfiles dir="${basedir}" includes="**/*.xsd" />
+		<srcfiles dir="${basedir}" includes="**/*.wsdl" />
+		<srcfiles dir="${basedir}" includes="**/*.json" />
+		<srcfiles dir="${basedir}" includes="**/*.map" />
 	</uptodate>
 
 	<!-- Create build start time stamp -->
@@ -58,7 +63,7 @@
 		<echo message="OVERRIDE target starting ...${line.separator}" />
 		<echo message="Command line: java -cp ... ${mqsi.applybaroverride}  ${mqsi.applybaroverride.parameters}${line.separator}" />
 
-		<java classname="com.ibm.broker.config.util.ApplyBarOverride" failonerror="true" fork="true">
+		<java classname="${mqsi.applybaroverride}" failonerror="true" fork="true">
   		<arg line="${mqsi.applybaroverride.parameters} -runtime" />
   		<classpath>
    			<fileset dir="${iib.path}${file.separator}server${file.separator}classes">
@@ -69,7 +74,6 @@
 			</fileset>
   		</classpath>
  		</java>
-
 	</target>
 
 	<macrodef name="mruntest">

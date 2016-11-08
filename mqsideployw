@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 MQSIPROFILE=$2/mqsiprofile
 
-source "$MQSIPROFILE"
+source "$MQSIPROFILE" > /dev/null 2>&1
 
-"$2"/mqsideploy $3 -i $4 -p $5 -a $6 -e $7
+mqsideploy $3 -i $4 -p $5 -a $6 -e $7
