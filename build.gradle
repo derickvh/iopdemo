@@ -1,6 +1,6 @@
 //build.gradle
 
-def iibEnv, appName, barfileDir, version, integrationNodes, paramsMQSICreateBarfile, soapUIProject, soapUIParams, soapuiExec
+def iibEnv, appName, barfileDir, version, integrationNodes, cbParams, soapUIProject, soapUIParams, soapuiExec
 
 task loadConfiguration {
 
@@ -11,11 +11,29 @@ task loadConfiguration {
 
   config.each { k,v  ->
 
-    appName = v.appName
+    appName = k
     iibEnv = v.iibEnv
     barfileDir = v.barfileDir
-    version = v.version
-    paramsMQSICreateBarfile = v.paramsMQSICreateBarfile
+    version = v.versionMajor + "." + v.versionMinor
+
+    cbParams = "-a "
+
+    //Mandatory. There must at least be one application
+
+    v.applications.each { app -> cbParams += "$app "}
+
+    if (!v.libraries.isEmpty()) {
+
+      cbParams += " -l "
+      v.libraries.each {lib -> cbParams += "$lib "}
+    }
+    if (!v.projects.isEmpty()) {
+
+      cbParams += " -p "
+      v.projects.each { proj -> cbParams += "$proj "}
+    }
+    if (v.deployAsSource == 'true') { cbParams += " -deployAsSource "}
+
     soapUIProject = v.soapUIProject
     soapUIParams = v.soapUIParams
     integrationNodes = v.integrationNodes
@@ -69,11 +87,11 @@ if (org.gradle.internal.os.OperatingSystem.current().windows) {
         soapuiExec = soapUIPathUnix + '/testrunner.sh'
       }
 
-    ant.properties['workspace.dir'] = projectDir.getParent()
+    ant.properties['workspace.dir'] = projectDir
     ant.properties['iib.barfile.dir'] = barfileDir
     ant.properties['iib.bar.version'] = version
     ant.properties['iib.bar'] = appName
-    ant.properties['iib.mqsicreatebar.params'] = paramsMQSICreateBarfile
+    ant.properties['iib.mqsicreatebar.params'] = cbParams
 
     ant.importBuild 'build.xml'
 
