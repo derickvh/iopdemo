@@ -108,7 +108,7 @@
 		</sequential>
 	</macrodef>
 
-	<target name="testHTTP">
+	<target name="testHTTP" depends="multiDeploy">
 	<echo message="TEST target starting ..." />
 	<java classname="demo.iib.ci.TestClient">
 	  <classpath>
