@@ -58,7 +58,7 @@
 		</exec>
 	</target>
 
-	<target name="override" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command.
+	<target name="override" depends="compile" description="Overrides properties of the built BAR file using the mqsiapplybaroverride command.
 		The new property values are read from an overrides file." unless="${deploy.only}">
 		<echo message="OVERRIDE target starting ...${line.separator}" />
 		<echo message="Command line: java -cp ... ${mqsi.applybaroverride}  ${mqsi.applybaroverride.parameters}${line.separator}" />

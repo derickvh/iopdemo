@@ -134,5 +134,5 @@ tasks.runSoapUI {
   description "Runs a SoapUI Test Project and generates a junit-style test report."
 }
 
-multiDeploy.dependsOn('compile', 'override')
+multiDeploy.dependsOn('override')
 runSoapUI.dependsOn('multiDeploy')
