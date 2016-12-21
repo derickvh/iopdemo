@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="iib.build" basedir=".">
 
-	<!-- Start of Global Properties -->
-
-	<property name="barfile.dir" location="${workspace.dir}${file.separator}${iib.barfile.dir}" />
-	<property name="iib.barfile.param" value="${barfile.dir}${file.separator}${iib.bar}-${iib.bar.version}.bar" />
-	<property name="override.file" location="${basedir}${file.separator}${iib.override.file}" />
-
-	<!-- Java class names of applybaroverride command -->
-
-	<property name="mqsi.applybaroverride" value="com.ibm.broker.config.util.ApplyBarOverride" />
-
-	<!-- Parameters for the various MQSI commands -->
-
-	<property name="mqsi.createbar.parameters" value="-data ${workspace.dir} -b ${iib.barfile.param} ${iib.mqsicreatebar.params} -cleanBuild" />
-	<property name="mqsi.applybaroverride.parameters" value="-b ${iib.barfile.param} -p ${override.file} -r" />
-
 	<!--Set property deploy.only if an existing BAR file is up to date -->
 
 	<uptodate property="deploy.only" targetfile="${iib.barfile.param}">
@@ -108,7 +93,7 @@
 		</sequential>
 	</macrodef>
 
-	<target name="testHTTP" depends="multiDeploy">
+	<target name="testHTTP" depends="multiDeploy" description="Exercises the HTTP Input Nodes">
 	<echo message="TEST target starting ..." />
 	<java classname="demo.iib.ci.TestClient">
 	  <classpath>
